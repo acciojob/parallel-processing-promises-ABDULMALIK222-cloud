@@ -1,4 +1,4 @@
-// Image URLs
+// Array of image URLs
 const imageUrls = [
   "https://picsum.photos/200/300",
   "https://picsum.photos/200/301",
@@ -12,41 +12,46 @@ function downloadImage(url) {
     img.src = url;
 
     img.onload = () => resolve(img);
-    img.onerror = () => reject(`Failed to load image: ${url}`);
+
+    img.onerror = () => {
+      reject("Failed to load image: " + url);
+    };
   });
 }
 
-// Main function
+// Main function to download all images
 function downloadImages() {
-  const loadingDiv = document.getElementById("loading");
-  const errorDiv = document.getElementById("error");
-  const outputDiv = document.getElementById("output");
+  const loading = document.getElementById("loading");
+  const error = document.getElementById("error");
+  const output = document.getElementById("output");
 
-  // Show loading
-  loadingDiv.style.display = "block";
-  errorDiv.textContent = "";
-  outputDiv.innerHTML = "";
+  // Show loading spinner
+  loading.style.display = "block";
+  error.textContent = "";
+  output.innerHTML = "";
 
+  // Create promises
   const promises = imageUrls.map(url => downloadImage(url));
 
+  // Execute all promises
   Promise.all(promises)
-    .then(images => {
+    .then((images) => {
       // Hide loading
-      loadingDiv.style.display = "none";
+      loading.style.display = "none";
 
       // Display images
       images.forEach(img => {
-        outputDiv.appendChild(img);
+        output.appendChild(img);
       });
     })
-    .catch(error => {
+    .catch((err) => {
       // Hide loading
-      loadingDiv.style.display = "none";
+      loading.style.display = "none";
 
-      // Show error
-      errorDiv.textContent = error;
+      // Show error message
+      error.textContent = err;
     });
 }
 
-// Call function
+// Call the function
 downloadImages();
